@@ -28,25 +28,30 @@ class ExamSessionSerializer(serializers.ModelSerializer):
     exam = ExamSerializer(read_only=True)
     student = UserSerializer(read_only=True)
     answers = AnswerSerializer(many=True, read_only=True)
+    score = serializers.FloatField(read_only=True)
     
     class Meta:
         model = ExamSession
         fields = [
             'id', 'exam', 'student', 'started_at', 'ended_at', 'status',
-            'violation_count', 'total_marks', 'time_left', 'answers'
+            'violation_count', 'total_marks', 'time_left', 'answers', 'score'
         ]
-        read_only_fields = ['student', 'started_at', 'ended_at', 'status', 'violation_count', 'total_marks', 'time_left']
+        read_only_fields = ['student', 'started_at', 'ended_at', 'status', 'violation_count', 'total_marks', 'time_left', 'score']
 
 
 class ExamSessionSummarySerializer(serializers.ModelSerializer):
     """Lightweight serializer for session lists without full related data"""
+    score = serializers.FloatField(read_only=True)
+    student = UserSerializer(read_only=True)
+    exam = ExamSerializer(read_only=True)
+    
     class Meta:
         model = ExamSession
         fields = [
             'id', 'exam', 'student', 'started_at', 'ended_at', 'status',
-            'violation_count', 'total_marks', 'time_left'
+            'violation_count', 'total_marks', 'time_left', 'score'
         ]
-        read_only_fields = ['student', 'started_at', 'ended_at', 'status', 'violation_count', 'total_marks', 'time_left']
+        read_only_fields = ['student', 'started_at', 'ended_at', 'status', 'violation_count', 'total_marks', 'time_left', 'score']
 
 
 class StartExamSerializer(serializers.Serializer):

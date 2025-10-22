@@ -48,6 +48,38 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def ban(self, request, pk=None):
+        """Ban a user (set is_active to False)"""
+        user = self.get_object()
+        
+        # Prevent banning admins
+        if user.role == 'ADMIN':
+            return Response(
+                {'detail': 'Cannot ban admin users.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Prevent self-ban
+        if user.id == request.user.id:
+            return Response(
+                {'detail': 'Cannot ban yourself.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        user.is_active = False
+        user.save()
+        return Response({'detail': f'User {user.username} has been banned.'})
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAdmin])
+    def unban(self, request, pk=None):
+        """Unban a user (set is_active to True)"""
+        user = self.get_object()
+        
+        user.is_active = True
+        user.save()
+        return Response({'detail': f'User {user.username} has been unbanned.'})
+    
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def register(request):
